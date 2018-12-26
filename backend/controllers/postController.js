@@ -6,10 +6,13 @@ module.exports = {
             title: req.body.title,
             content: req.body.content
         });
-        post.save();
-        res.status(201).json({
-            message: 'Post Added successfully'
-        })
+        post.save().then(createdPost => {
+            res.status(201).json({
+                message: 'Post Added successfully',
+                postId: createdPost._id
+            });
+        });
+
     },
 
     findPost: function (req, res, next) {
