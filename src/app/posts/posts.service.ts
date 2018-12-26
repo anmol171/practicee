@@ -12,7 +12,7 @@ export class PostsService {
     constructor(private http: HttpClient) { }
     
     getPosts() {
-        this.http.get<{ message: string, posts: any }>('http://localhost:3000/api/posts')
+        this.http.get<{ message: string, posts: any }>('http://localhost:3000/api/getPosts')
         .pipe(map((postData) => {
             return postData.posts.map(post => {
                     return {
@@ -28,15 +28,13 @@ export class PostsService {
             });
     }
 
-    // jXaF1EpRot2NXiTw
     getPostUpdateListener() {
         return this.postsUpdated.asObservable();
     }
 
     addPost(title: string, content: string) {
         const post: Post = { id: null, title: title, content: content };
-        this.http
-        .post<{ message: string }>("http://localhost:3000/api/posts", post)
+        this.http.post<{ message: string }>("http://localhost:3000/api/posts", post)
         .subscribe(responseData => {
             this.posts.push(post);
             this.postsUpdated.next([...this.posts]);
