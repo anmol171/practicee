@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const morgan = require('morgan');
 const request = require('request');
-
+const path = require("path");
 const mongoose = require("mongoose");
 
 const cors_sec = require('./backend/routes/corsheaders');
@@ -64,7 +64,10 @@ app.use(bodyParser.json({
     limit: '10mb'
 }));
 
+
 app.use(router);
+
+app.use("/images", express.static(path.join("backend/images")));
 
 require('./backend/routes/app')(router);
 
