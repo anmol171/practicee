@@ -4,7 +4,7 @@ var postCtrl = require('../controllers/postController');
 var multer = require('multer');
 var fs = require("fs");
 var userCtrl = require('../controllers/userController');
-
+var checkAuth = require("../middleware/check-auth");
 
 
 
@@ -12,6 +12,7 @@ module.exports = function (app) {
 
 
     app.post("/api/user/signup", userCtrl.signUp);
+    app.post("/api/user/login", userCtrl.login);
 
 
 
@@ -38,9 +39,9 @@ module.exports = function (app) {
         }
     });
 
-    app.post('/api/posts', multer({ storage: storage }).single("image"), postCtrl.addPost);
+    app.post('/api/posts', checkAuth, multer({ storage: storage }).single("image"), postCtrl.addPost);
     app.use('/api/getPosts', postCtrl.getPost);
-    app.delete('/api/deletePosts/:id', postCtrl.deletePost);
-    app.put('/api/updatePost/:id', multer({ storage: storage }).single("image"), postCtrl.updatePosts);
+    app.put('/api/updatePost/:id', checkAuth, multer({ storage: storage }).single("image"), postCtrl.updatePosts);
     app.get('/api/findPost/:id', postCtrl.findPost);
+    app.delete('/api/deletePosts/:id', checkAuth, postCtrl.deletePost);
 }

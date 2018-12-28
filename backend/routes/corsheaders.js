@@ -17,7 +17,7 @@ var ipsec = {
 			res.header('Access-Control-Allow-Origin', req.headers.origin);
 			res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 			res.header("Access-Control-Allow-Credentials", 'true');
-			res.header('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers,withCredentials, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers');
+			res.header('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers,withCredentials, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization');
 
 			if (req.method === 'OPTIONS') {
 				console.log(req.path, req.headers.origin);

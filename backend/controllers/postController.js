@@ -7,7 +7,8 @@ module.exports = {
             _id: req.body.id,
             title: req.body.title,
             content: req.body.content,
-            imagePath: url + "/images/" + req.file.filename
+            imagePath: url + "/images/" + req.file.filename,
+            creator: req.userData.userId
         });
         post.save().then(createdPost => {
             res.status(201).json({
@@ -30,26 +31,26 @@ module.exports = {
         const currentPage = +req.query.page;
         const postQuery = Post.find();
         let fetchedPosts;
-        if(pageSize && currentPage) {
+        if (pageSize && currentPage) {
             postQuery
                 .skip(pageSize * (currentPage - 1))
                 .limit(pageSize);
         }
         postQuery.then(documents => {
-                // console.log(documents);
-                // res.status(200).json({
-                //     message: "post success",
-                //     posts: documents
-                // });
-                fetchedPosts = documents;
-                return Post.count();
-            }).then(count => {
-                res.status(200).json({
-                    message: "post fetched successfully",
-                    posts: fetchedPosts,
-                    maxPosts: count
-                });
+            // console.log(documents);
+            // res.status(200).json({
+            //     message: "post success",
+            //     posts: documents
+            // });
+            fetchedPosts = documents;
+            return Post.count();
+        }).then(count => {
+            res.status(200).json({
+                message: "post fetched successfully",
+                posts: fetchedPosts,
+                maxPosts: count
             });
+        });
     },
     updatePosts: function (req, res, next) {
         let imagePath = req.body.imagePath;
@@ -57,18 +58,20 @@ module.exports = {
             const url = req.protocol + '://' + req.get("host");
             imagePath: url + "/images/" + req.file.filename
         }
-        
+
         const post = new Post({
             _id: req.body.id,
             title: req.body.title,
             content: req.body.content,
-            imagePath: imagePath
+            imagePath: imagePath,
+            creator: req.userData.userId
         })
-        console.log("ppppppppppppppppppppppppppp",req.params.id);
-        
-        Post.updateOne({ _id: req.params.id }, post).then(result => {
-            console.log(result);
-            res.status(200).json({ message: "Update Successfull" });
+        Post.updateOne({ _id: req.params.id, creator: req.userData.userId }, post).then(result => {
+            if (result.nModified > 0) {
+                res.status(200).json({ message: "Update Successfull" });
+            } else {
+                res.status(401).json({ message: "Not Authorized" });
+            }
         })
     },
 
@@ -83,9 +86,12 @@ module.exports = {
     },
 
     deletePost: function (req, res, next) {
-        Post.deleteOne({ _id: req.params.id }).then(result => {
-            console.log(result,"rrrrrrrrrrrrrrrrrrrrrrrrrrrr");
-            res.status(200).json({ message: "Post Deleted" });
+        Post.deleteOne({ _id: req.params.id, creator: req.userData.userId }).then(result => {
+            if (result.n > 0) {
+                res.status(200).json({ message: "Deletion Successfull" });
+            } else {
+                res.status(401).json({ message: "Not Authorized" });
+            }
         });
     }
 
